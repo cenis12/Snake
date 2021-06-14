@@ -1,14 +1,21 @@
 window.onload = function() {
     var canvas = document.createElement('canvas');
     var showScore = document.createElement('div');
-    showScore.style.border = "2px solid black";
-    showScore.height = "80px";
+    var stem = document.createElement('div');
+    var foot = document.createElement('div');
+    stem.id = "stem";
+    foot.id = "foot";
+    foot.innerHTML = "GAME ON"
+    //showScore.style.border = "2px solid black";
+    //showScore.height = "80px";
     showScore.id = "showScore";
     canvas.width = 900;
-    canvas.height = 600;
-    canvas.style.border = "2px solid red";
+    canvas.height = 500;
+    //canvas.style.border = "2px solid red";
     document.body.appendChild(showScore);
     document.body.appendChild(canvas);
+    document.body.appendChild(stem);
+    document.body.appendChild(foot);
     var canvasWidth = canvas.width;
     var canvasHeight = canvas.height;
     var ctx = canvas.getContext("2d");
@@ -17,6 +24,8 @@ window.onload = function() {
     var life = 3;
     var level = 0;
     var touch = 0;
+    var pause = false;
+
     
 
     document.addEventListener("keydown", interaction);
@@ -25,7 +34,7 @@ window.onload = function() {
 
     /*Propritétés serpent*/
     var serpColor = "blue";
-    var serpLength = 30;//taille d'un bloc
+    var serpLength = 15;//taille d'un bloc
     var nbrBlWidth = canvasWidth/serpLength;
     var nbrBlHeight = canvasHeight/serpLength;
     var xSerp = Math.trunc(Math.random()*nbrBlWidth)*serpLength;
@@ -42,8 +51,16 @@ window.onload = function() {
     var appleTime = 0;
     var appleTimeMax = 100;
 
+    //propriété Bonus 
+
+    var bonusColor = "green";
+    var xBonus = Math.trunc(Math.random()*nbrBlWidth)*serpLength;
+    var yBonus = Math.trunc(Math.random()*nbrBlHeight)*serpLength;
+    var bonusTime = 0;
+    var showBonus = false;
+
     //Fonction qui dessine le serpent
-    var intervalID = setInterval(game, 250);
+    var intervalID = setInterval(game, 100);
 
     ShowScoreLife();
 
@@ -54,6 +71,8 @@ window.onload = function() {
         collisionDetect();
         Score();
         lifeHandle();
+        ShowBonus();
+        
     }
     //Gestion position du serpent
     function SnakePosition(){
@@ -84,6 +103,16 @@ window.onload = function() {
         ctx.fillText("V",xApple+3,yApple+3);  
         ctx.closePath();      
     }
+
+    //Fonction qui dessine le bonusTime
+    function drawBonus(){
+        ctx.font = "13px Arial";
+        ctx.fillStyle = "red";
+        ctx.fillRect(xBonus,yBonus,serpLength,serpLength);
+        ctx.fillStyle = bonusColor;
+        ctx.fillText("💚",xBonus-1.8,yBonus+13);
+    }
+
     //Fonction qui initialise la position de la pomme
     function initApple(){
         xApple = Math.trunc(Math.random()*nbrBlWidth)*serpLength;
@@ -94,6 +123,12 @@ window.onload = function() {
         xSerp = Math.trunc(Math.random()*nbrBlWidth)*serpLength;
         ySerp = Math.trunc(Math.random()*nbrBlHeight)*serpLength;
     }
+    //Fonction qui initialise la position du bonus
+    function initBonus(){
+        xBonus = Math.trunc(Math.random()*nbrBlWidth)*serpLength;
+        yBonus = Math.trunc(Math.random()*nbrBlHeight)*serpLength;
+    }
+
     //Detection collision
     function collisionDetect(){
         //cas où le serpent se mord
@@ -135,6 +170,10 @@ window.onload = function() {
     }
     //Fonction qui gère la vie du serpent
     function lifeHandle(){
+        if (pause == true) {
+            collision = false;
+            return;
+        }
         if(collision == true){
             life--;
             collision = false;
@@ -144,19 +183,55 @@ window.onload = function() {
             ShowScoreLife();
             bodySerp = [bodySerp[bodySerp.lenght-1]];
             if(life == 0){
-                ctx.fillStyle = "#000";
-                ctx.fillText("GAME OVER",canvasWidth/2,canvasHeight/2);
+                ctx.fillStyle = "#fff";
+                ctx.font = "40px Arial";
+                ctx.fillText("GAME OVER",canvasWidth/2-130,canvasHeight/2);
+                ctx.font = "25px Arial";
+                ctx.fillText("SCORE : "+ score + " points",canvasWidth/2-130,canvasHeight*2/3);
+                ctx.font = "30px Arial";
+                ctx.fillText("Appuyer sur ENTRER pour rejouer",canvasWidth/2-130,canvasHeight*3/4);
                 clearTimeout(intervalID);
             }
         }
     }
+    // Fonction qui sert à gerer l'affichage du bonusColor
+    function ShowBonus(){
+        if(bonusTime++> 50){
+            bonusTime = 0;
+            // on peux afficher le bonus
+            if(Math.random() > -0.7){
+            // on va afficher le bonus
+            initBonus();
+            showBonus = true;
+            }else{
+            //on affiche pas  
+              //return;
+              xBonus = 1000;
+              yBonus = 800;
+              showBonus = false;
+            }
+        }
+        if (showBonus == true) {
+            drawBonus();
+        }
+        // Tester on a mangé le bonus
+        if (xSerp == xBonus && ySerp == yBonus) {
+            life++;
+            ShowScoreLife();
+            xbonus = 1000;
+            yBonus = 800;
+            showBonus = false;
+        }   
+    }
+    
 
     //Fonction qui dirige le serpent
     function interaction(event){
         console.log(event.keyCode);
         switch (event.keyCode) {
             case 37:
-              //Gauche  
+              //Gauche
+            pause = false;    
                if (touch == 39) {
                    break;
                } 
@@ -165,7 +240,8 @@ window.onload = function() {
             touch = event.keyCode;
                 break;
             case 38:
-              //Haut  
+              //Haut
+            pause = false;    
                 if (touch == 40) {
                     break;
                 }
@@ -174,7 +250,8 @@ window.onload = function() {
             touch = event.keyCode;
                 break;
             case 39:
-              //Droite  
+              //Droite
+            pause = false;    
                 if (touch == 37) {
                     break;
                 }
@@ -184,6 +261,7 @@ window.onload = function() {
                 break;    
             case 40:
             //Bas
+            pause = false;
             if (touch == 38) {
                 break;
             }
@@ -193,10 +271,15 @@ window.onload = function() {
                 break;
             case 32:
              //Pause
+             pause = true;
              moveX = 0;
              moveY = 0;
              touch = event.keyCode; 
-                break;     
+                break;
+            case 13:
+            // Rejouer
+             document.location.reload(true);
+                break;              
             default: 
         }
     }

@@ -1,0 +1,51 @@
+body{
+    background-color: rgb(50, 143, 172);
+}
+#showScore{
+    background-color: rgb(18, 72, 122);
+    color: white;
+    text-align: center;
+    font-size: 30px;
+    font-weight: bold;
+    border: 10px solid grey;
+    height: 40px;
+    width: 900px;
+    margin: 0 auto;
+    box-shadow: 15px 5px 5px rgb(84, 138, 131);
+    border-radius: 20px 20px 0px 0px;
+    position:relative;
+    bottom: -10px;
+    z-index: -1;
+}
+canvas{
+    background-color: #2c3e50;
+    border: 10px solid grey;
+    border-radius: 0px 0px 20px 20px;
+    display: block;
+    margin: 0 auto;
+    box-shadow: 15px 15px 5px rgb(84, 138, 131);
+    
+}
+#stem{
+    background-color: darkkhaki;
+    height: 100px;
+    width: 90px;
+    margin: 0 auto;
+    
+    box-shadow: 3px 3px 3px black;
+}
+#foot{
+    background-color: white;
+    color: teal;
+    text-align: center;
+    font-size: 30px;
+    border: 10px solid gray;
+    height: 40px;
+    width: 300px;
+    margin:0 auto;
+    text-shadow: 1px 2px 3px black;
+    box-shadow: 3px 3px 3px black;
+    border-radius: 20px;
+    position: relative;
+    z-index: +1;
+}
